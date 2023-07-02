@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:15.1-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=todo_user
+      - POSTGRES_PASSWORD=foobarbaz
+      - POSTGRES_DB=todo_db
+    networks:
+      - backend
+
+  todo_app:
+    image: todo_app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: dev
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+    init: true
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://todo_user:foobarbaz@db:5432/todo_db
+    networks:
+      - backend
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+      
+volumes:
+  pg_data:
+
+networks:
+  backend:
