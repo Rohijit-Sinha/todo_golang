@@ -21,3 +21,5 @@
 go.work
 
 tmp/
+
+todo/.air.toml

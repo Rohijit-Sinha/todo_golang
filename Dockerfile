@@ -6,7 +6,7 @@ FROM golang:1.20-bullseye AS build-base
 WORKDIR /app 
 
 # Copy only files required to install dependencies (better layer caching)
-COPY go.mod go.sum ./
+COPY todo/go.mod todo/go.sum ./
 
 # Use cache mount to speed up install of existing dependencies
 RUN --mount=type=cache,target=/go/pkg/mod \
@@ -19,7 +19,9 @@ FROM build-base AS dev
 RUN go install github.com/cosmtrek/air@latest && \
   go install github.com/go-delve/delve/cmd/dlv@latest
 
-COPY . .
+COPY todo/. .
+
+COPY .air.toml .
 
 CMD ["air", "-c", ".air.toml"]
 
@@ -28,7 +30,7 @@ FROM build-base AS build-production
 # Add non root user
 RUN useradd -u 1001 nonroot
 
-COPY . .
+COPY todo/. .
 
 # Compile healthcheck
 RUN go build \

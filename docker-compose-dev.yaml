@@ -21,8 +21,11 @@ services:
       target: dev
     volumes:
       - type: bind
-        source: .
-        target: /app
+        source: ./todo/
+        target: /app/
+      # - type: bind
+      #   source: ./.air.toml
+      #   target: /app/.air.toml
     init: true
     depends_on:
       - db
